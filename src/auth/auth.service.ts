@@ -22,7 +22,7 @@ export class AuthService {
     const user = await this.prisma.user
       .create({
         data: {
-          email: dto.email,
+          userName: dto.userName,
           hash,
         },
       })
@@ -35,7 +35,7 @@ export class AuthService {
         throw error;
       });
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.userName);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -44,7 +44,7 @@ export class AuthService {
   async signinLocal(dto: AuthDto): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: {
-        email: dto.email,
+        userName: dto.userName,
       },
     });
 
@@ -53,7 +53,7 @@ export class AuthService {
     const passwordMatches = await argon.verify(user.hash, dto.password);
     if (!passwordMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.userName);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -85,7 +85,7 @@ export class AuthService {
     const rtMatches = await argon.verify(user.hashedRt, rt);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.userName);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
