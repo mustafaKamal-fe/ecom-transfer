@@ -12,8 +12,14 @@ import { RtGuard } from '../common/guards';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
 import { Tokens } from './types';
+import { RBACMiddleware } from './guards/rbac.guard';
+import { RequiredPermission } from './decorators/required-roles.decorator';
+import Actions from './enum/actions';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiBearerAuth()
+@ApiTags('Auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -33,6 +39,8 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(RBACMiddleware)
+  @RequiredPermission(Actions.Read)
   logout(@GetCurrentUserId() userId: number): Promise<boolean> {
     return this.authService.logout(userId);
   }
@@ -46,5 +54,14 @@ export class AuthController {
     @GetCurrentUser('refreshToken') refreshToken: string,
   ): Promise<Tokens> {
     return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  // @Public()
+  @UseGuards(RBACMiddleware)
+  @Post('revoke')
+  @HttpCode(HttpStatus.OK)
+  @RequiredPermission(Actions.Read)
+  revokeRefreshToken() {
+    return '';
   }
 }

@@ -1,4 +1,10 @@
 export type JwtPayload = {
-  email: string;
-  sub: number;
+  uname: string;
+  id: number;
+  perm: string[];
+};
+
+export type RJwtPayload = {
+  unname: string;
+  id: number;
 };
