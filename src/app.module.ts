@@ -4,16 +4,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     PrismaModule,
-    DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production',
-    }),
+    AttachmentsModule,
   ],
   providers: [
     {
