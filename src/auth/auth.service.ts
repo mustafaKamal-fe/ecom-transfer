@@ -5,6 +5,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { exclude } from 'src/common/utils/exclude';
+import { UserLogin } from './entities/user-login.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -12,23 +13,15 @@ export class AuthService {
     private jwt: JwtService,
     private config: ConfigService,
   ) {}
-  async login(userLoginDto: UserLoginDto) {
+  async login(userLoginDto: UserLoginDto): Promise<UserLogin> {
     //find user by username
     const user = await this.prisma.user.findUnique({
       where: {
         username: userLoginDto.username,
       },
-      select: {
-        id: true,
-        username: true,
-        password: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
     //if user not found
-    if (!user) {
+    if (!user || !user.password) {
       throw new ForbiddenException('User not found');
     }
     //if user found

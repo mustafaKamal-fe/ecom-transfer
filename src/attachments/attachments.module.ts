@@ -3,7 +3,7 @@ import { AttachmentsService } from './attachments.service';
 import { AttachmentsController } from './attachments.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { BullModule } from '@nestjs/bullmq';
-import { imgOptmizerConsumer } from './imgopt-Consumer';
+import { ImgOptmizerConsumer } from './imgopt-Consumer';
 import { multerStorage } from './storage/storage-config';
 
 @Module({
@@ -21,6 +21,6 @@ import { multerStorage } from './storage/storage-config';
     }),
   ],
   controllers: [AttachmentsController],
-  providers: [AttachmentsService, imgOptmizerConsumer],
+  providers: [AttachmentsService, ImgOptmizerConsumer],
 })
 export class AttachmentsModule {}

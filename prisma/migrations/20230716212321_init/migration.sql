@@ -35,6 +35,7 @@ CREATE TABLE "User" (
     "rewardPoints" INTEGER DEFAULT 0,
     "role" TEXT DEFAULT 'user',
     "shopId" INTEGER,
+    "deliveryBoyId" INTEGER,
     "walletId" INTEGER NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -62,7 +63,7 @@ CREATE TABLE "Wallet" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "amount" DECIMAL(65,30),
+    "amount" DECIMAL(65,30) NOT NULL DEFAULT 0,
 
     CONSTRAINT "Wallet_pkey" PRIMARY KEY ("id")
 );
@@ -86,15 +87,6 @@ CREATE TABLE "Ucode" (
     "dateExpired" TIMESTAMP(3),
 
     CONSTRAINT "Ucode_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ApiToken" (
-    "id" SERIAL NOT NULL,
-    "token" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
-
-    CONSTRAINT "ApiToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -123,7 +115,7 @@ CREATE TABLE "Address" (
     "id" SERIAL NOT NULL,
     "street" TEXT,
     "cityId" INTEGER,
-    "stateId" INTEGER,
+    "provinceId" INTEGER NOT NULL,
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
     "buildingNo" TEXT,
@@ -193,7 +185,13 @@ CREATE TABLE "Product" (
     "published" BOOLEAN NOT NULL DEFAULT true,
     "authorId" INTEGER NOT NULL,
     "shopId" INTEGER,
-    "categoryId" INTEGER,
+    "availableFrom" TIMESTAMP(3),
+    "availableTo" TIMESTAMP(3),
+    "isFeatured" BOOLEAN DEFAULT false,
+    "isBestSeller" BOOLEAN DEFAULT false,
+    "isTopRated" BOOLEAN DEFAULT false,
+    "isSpecialOffer" BOOLEAN DEFAULT false,
+    "isAvliable" BOOLEAN DEFAULT true,
     "keywords" TEXT,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -212,7 +210,7 @@ CREATE TABLE "wholesalePrice" (
 );
 
 -- CreateTable
-CREATE TABLE "Inventory" (
+CREATE TABLE "InventoryLog" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -221,7 +219,7 @@ CREATE TABLE "Inventory" (
     "quantity" INTEGER,
     "status" TEXT,
 
-    CONSTRAINT "Inventory_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "InventoryLog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -562,6 +560,12 @@ CREATE TABLE "_AddressToProfile" (
 );
 
 -- CreateTable
+CREATE TABLE "_CategoryToProduct" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_ShopToUser" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -574,10 +578,19 @@ CREATE UNIQUE INDEX "Profile_userId_key" ON "Profile"("userId");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Ucode_code_key" ON "Ucode"("code");
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ApiToken_token_key" ON "ApiToken"("token");
+CREATE UNIQUE INDEX "User_deliveryBoyId_key" ON "User"("deliveryBoyId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_walletId_key" ON "User"("walletId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DeliveryBoy_userId_key" ON "DeliveryBoy"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Ucode_code_key" ON "Ucode"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "City_name_key" ON "City"("name");
@@ -601,6 +614,12 @@ CREATE UNIQUE INDEX "_AddressToProfile_AB_unique" ON "_AddressToProfile"("A", "B
 CREATE INDEX "_AddressToProfile_B_index" ON "_AddressToProfile"("B");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "_CategoryToProduct_AB_unique" ON "_CategoryToProduct"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_CategoryToProduct_B_index" ON "_CategoryToProduct"("B");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_ShopToUser_AB_unique" ON "_ShopToUser"("A", "B");
 
 -- CreateIndex
@@ -610,16 +629,13 @@ CREATE INDEX "_ShopToUser_B_index" ON "_ShopToUser"("B");
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_deliveryBoyId_fkey" FOREIGN KEY ("deliveryBoyId") REFERENCES "DeliveryBoy"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_walletId_fkey" FOREIGN KEY ("walletId") REFERENCES "Wallet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DeliveryBoy" ADD CONSTRAINT "DeliveryBoy_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "WalletTransaction" ADD CONSTRAINT "WalletTransaction_walletId_fkey" FOREIGN KEY ("walletId") REFERENCES "Wallet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ApiToken" ADD CONSTRAINT "ApiToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "City" ADD CONSTRAINT "City_provinceId_fkey" FOREIGN KEY ("provinceId") REFERENCES "Province"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -628,7 +644,7 @@ ALTER TABLE "City" ADD CONSTRAINT "City_provinceId_fkey" FOREIGN KEY ("provinceI
 ALTER TABLE "Address" ADD CONSTRAINT "Address_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_stateId_fkey" FOREIGN KEY ("stateId") REFERENCES "Province"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Address" ADD CONSTRAINT "Address_provinceId_fkey" FOREIGN KEY ("provinceId") REFERENCES "Province"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -649,16 +665,13 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_authorId_fkey" FOREIGN KEY ("autho
 ALTER TABLE "Product" ADD CONSTRAINT "Product_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "Shop"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "wholesalePrice" ADD CONSTRAINT "wholesalePrice_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Inventory" ADD CONSTRAINT "Inventory_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "InventoryLog" ADD CONSTRAINT "InventoryLog_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Inventory" ADD CONSTRAINT "Inventory_productvariantId_fkey" FOREIGN KEY ("productvariantId") REFERENCES "ProductVariant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "InventoryLog" ADD CONSTRAINT "InventoryLog_productvariantId_fkey" FOREIGN KEY ("productvariantId") REFERENCES "ProductVariant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductVariant" ADD CONSTRAINT "ProductVariant_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -737,6 +750,12 @@ ALTER TABLE "_AddressToProfile" ADD CONSTRAINT "_AddressToProfile_A_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "_AddressToProfile" ADD CONSTRAINT "_AddressToProfile_B_fkey" FOREIGN KEY ("B") REFERENCES "Profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CategoryToProduct" ADD CONSTRAINT "_CategoryToProduct_A_fkey" FOREIGN KEY ("A") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CategoryToProduct" ADD CONSTRAINT "_CategoryToProduct_B_fkey" FOREIGN KEY ("B") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ShopToUser" ADD CONSTRAINT "_ShopToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Shop"("id") ON DELETE CASCADE ON UPDATE CASCADE;

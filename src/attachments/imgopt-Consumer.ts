@@ -3,9 +3,9 @@ import { Job } from 'bullmq';
 import sharp from 'sharp';
 
 @Processor('img-optimization')
-export class imgOptmizerConsumer extends WorkerHost {
+export class ImgOptmizerConsumer extends WorkerHost {
   async process(job: Job<any, any, string>): Promise<any> {
-    const { attachmentId, filePath } = job.data;
+    const filePath = job.data.filePath;
     console.log('processing', job.data);
 
     // convert to webp and resize to 200x200 and 300x300 and 600x600 using sharp
