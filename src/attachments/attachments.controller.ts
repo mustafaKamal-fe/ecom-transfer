@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  UploadedFiles,
   UploadedFile,
 } from '@nestjs/common';
 import { AttachmentsService } from './attachments.service';
@@ -15,13 +14,11 @@ import { CreateAttachmentDto } from './dto/create-attachment.dto';
 import { UpdateAttachmentDto } from './dto/update-attachment.dto';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { Public } from '../common/decorators';
 
 @Controller('attachments')
 export class AttachmentsController {
   constructor(private readonly attachmentsService: AttachmentsService) {}
 
-  @Public()
   @Post()
   @ApiConsumes('multipart/form-data')
   @ApiBody({

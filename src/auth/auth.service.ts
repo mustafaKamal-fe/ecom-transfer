@@ -1,69 +1,89 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/binary';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserLoginDto } from './dto/user-login.dto';
 import * as argon from 'argon2';
-import { PrismaService } from '../prisma/prisma.service';
-
-import { AuthDto } from './dto';
-import { JwtPayload, RJwtPayload, Tokens } from './types';
-
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { exclude } from 'src/common/utils/exclude';
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private jwt: JwtService,
     private config: ConfigService,
   ) {}
+  async login(userLoginDto: UserLoginDto) {
+    //find user by username
+    const user = await this.prisma.user.findUnique({
+      where: {
+        username: userLoginDto.username,
+      },
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    //if user not found
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    //if user found
+    //compare password
+    const isPasswordMatched = await argon.verify(
+      user.password,
+      userLoginDto.password,
+    );
+    //if password not matched
+    if (!isPasswordMatched) {
+      throw new ForbiddenException('Password not matched');
+    }
+    //if password matched
 
-  async signupLocal(dto: AuthDto): Promise<Tokens> {
-    throw new Error('Method not implemented.');
+    //delete password
+    const userWithoutPassword = exclude(user, ['password']);
+    //return user
+    const token = await this.sign(user);
+    return { ...userWithoutPassword, token };
   }
 
-  async signinLocal(dto: AuthDto): Promise<Tokens> {
-    throw new Error('Method not implemented.');
+  async me(userId: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+      //if user not found
+      if (!user) {
+        throw new ForbiddenException('User not found');
+      }
+
+      //delete password
+      const userWithoutPassword = exclude(user, ['password']);
+      //return user
+
+      return userWithoutPassword;
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
   }
-
-  async logout(userId: number): Promise<boolean> {
-    throw new Error('Method not implemented.');
-  }
-
-  async refreshTokens(userId: number, rt: string): Promise<Tokens> {
-    throw new Error('Method not implemented.');
-  }
-
-  async updateRtHash(userId: number, rt: string): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  async getTokens(
-    userId: number,
-    userName: string,
-    permissions: string[],
-  ): Promise<Tokens> {
-    const jwtPayload: JwtPayload = {
-      id: userId,
-      uname: userName,
-      perm: permissions,
-    };
-    const rJwtPayload: RJwtPayload = {
-      id: userId,
-      unname: userName,
-    };
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.get<string>('AT_SECRET'),
-        expiresIn: '15m',
-      }),
-      this.jwtService.signAsync(rJwtPayload, {
-        secret: this.config.get<string>('RT_SECRET'),
-        expiresIn: '7d',
-      }),
-    ]);
-
-    return {
-      access_token: at,
-      refresh_token: rt,
-    };
+  sign(user: any): Promise<string> {
+    const payload = { username: user.username, sub: user.id };
+    const secret = this.config.get('JWT_SECRET');
+    return this.jwt.signAsync(payload, {
+      secret: secret,
+    });
   }
 }
