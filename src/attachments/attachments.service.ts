@@ -28,7 +28,7 @@ export class AttachmentsService {
   }
 
   update(id: number, updateAttachmentDto: UpdateAttachmentDto) {
-    return `This action updates a #${id} attachment`;
+    return `This action updates a #${id} attachment with ${updateAttachmentDto}`;
   }
 
   remove(id: number) {

@@ -13,5 +13,5 @@ export async function customSeed() {
     },
   });
 
-  client.$disconnect();
+  await client.$disconnect();
 }

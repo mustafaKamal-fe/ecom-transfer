@@ -51,20 +51,21 @@ model User {
   // user
   // seller
   // admin
-  role              String?             @default("user")
-  orders            Order[]
-  Product           Product[]
-  cart              cart[]
-  Shop              Shop[]
-  SubOrder          SubOrder[]
-  Category          Category[]
-  shopId            Int?
-  DeliveryBoy       DeliveryBoy[]
-  Wallet            Wallet              @relation(fields: [walletId], references: [id])
-  walletId          Int
-  Notification      Notification[]
-  NotificationToken NotificationToken[]
-  Coupon            Coupon[]
+  role               String?             @default("user")
+  orders             Order[]
+  products           Product[]
+  carts              cart[]
+  shops              Shop[]
+  subOrders          SubOrder[]
+  categorys          Category[]
+  shopId             Int?
+  deliveryBoy        DeliveryBoy?        @relation(fields: [deliveryBoyId], references: [id])
+  deliveryBoyId      Int?                @unique
+  wallet             Wallet              @relation(fields: [walletId], references: [id])
+  walletId           Int                 @unique
+  notifications      Notification[]
+  notificationTokens NotificationToken[]
+  coupons            Coupon[]
 }
 
 model DeliveryBoy {
@@ -79,8 +80,8 @@ model DeliveryBoy {
   suspendReason  String?
   suspendDate    DateTime?
   depitThreshold Decimal?
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         Int?
+  user           User?
+  userId         Int?      @unique
 }
 
 model Wallet {
@@ -88,8 +89,8 @@ model Wallet {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  amount            Decimal?
-  user              User[]
+  amount            Decimal             @default(0)
+  user              User?
   WalletTransaction WalletTransaction[]
 }
 
@@ -135,8 +136,8 @@ model Address {
   street      String?
   cityId      Int?
   city        City?         @relation(fields: [cityId], references: [id])
-  stateId     Int?
-  state       Province?     @relation(fields: [stateId], references: [id])
+  provinceId  Int
+  province    Province      @relation(fields: [provinceId], references: [id])
   Order       Order[]
   latitude    Float?
   longitude   Float?
@@ -198,38 +199,38 @@ model Product {
   metaDescription String? @db.Text // max limit 320
   metaKeyword     String? @db.Text
 
-  defaultVariant           Int?             @default(0)
-  isSale                   Boolean?         @default(false)
+  defaultVariant           Int?       @default(0)
+  isSale                   Boolean?   @default(false)
   price                    Decimal
   quantity                 Int?
-  isWholeSale              Boolean?         @default(false)
-  trackQuantity            Boolean?         @default(true)
-  allowOutOfStockPurchases Boolean?         @default(false)
-  brand                    String?          @db.VarChar(255)
-  description              String?          @db.Text
-  published                Boolean          @default(true)
-  author                   User             @relation(fields: [authorId], references: [id])
+  isWholeSale              Boolean?   @default(false)
+  trackQuantity            Boolean?   @default(true)
+  allowOutOfStockPurchases Boolean?   @default(false)
+  brand                    String?    @db.VarChar(255)
+  description              String?    @db.Text
+  published                Boolean    @default(true)
+  author                   User       @relation(fields: [authorId], references: [id])
   authorId                 Int
   shopId                   Int?
-  shop                     Shop?            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shop                     Shop?      @relation(fields: [shopId], references: [id], onDelete: Cascade)
   availableFrom            DateTime?
   availableTo              DateTime?
-  isFeatured               Boolean?         @default(false)
-  isBestSeller             Boolean?         @default(false)
-  isTopRated               Boolean?         @default(false)
-  isSpecialOffer           Boolean?         @default(false)
-  isAvliable               Boolean?         @default(true)
-  category                 Category?        @relation(fields: [categoryId], references: [id])
-  categoryId               Int?
-  keywords                 String?
-  OrderItem                OrderItem[]
-  ProductImage             ProductImage[]
-  cart                     cart[]
-  SubOrderItem             SubOrderItem[]
-  ProductTag               ProductTag[]
-  ProductVariant           ProductVariant[]
-  Inventory                Inventory[]
-  wholesalePriceList       wholesalePrice[]
+  isFeatured               Boolean?   @default(false)
+  isBestSeller             Boolean?   @default(false)
+  isTopRated               Boolean?   @default(false)
+  isSpecialOffer           Boolean?   @default(false)
+  isAvliable               Boolean?   @default(true)
+  categories               Category[]
+
+  keywords        String?
+  orderItems      OrderItem[]
+  productImages   ProductImage[]
+  carts           cart[]
+  subOrderItems   SubOrderItem[]
+  productTags     ProductTag[]
+  productVariants ProductVariant[]
+  inventoryLogs   InventoryLog[]
+  wholesalePrices wholesalePrice[]
 }
 
 model wholesalePrice {
@@ -242,7 +243,7 @@ model wholesalePrice {
   quantity  Int?
 }
 
-model Inventory {
+model InventoryLog {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -272,7 +273,7 @@ model ProductVariant {
   status              Int?                  @default(0)
   sortOrder           Int?                  @default(0)
   ProductVariantImage ProductVariantImage[]
-  Inventory           Inventory[]
+  inventoryLogs       InventoryLog[]
 }
 
 model ProductImage {

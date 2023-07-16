@@ -3,10 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { exclude } from 'src/common/utils/exclude';
 
 @Injectable()
 export class JwtQueryStrategy extends PassportStrategy(Strategy, 'jwtquery') {
-  constructor(configService: ConfigService, private prisma: PrismaService) {
+  constructor(
+    configService: ConfigService,
+    private prisma: PrismaService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromUrlQueryParameter('token'),
       ignoreExpiration: true,
@@ -23,7 +27,6 @@ export class JwtQueryStrategy extends PassportStrategy(Strategy, 'jwtquery') {
     if (!user) {
       throw new ForbiddenException('Token is invalid');
     }
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return exclude(user, ['password']);
   }
 }
