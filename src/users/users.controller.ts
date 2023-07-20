@@ -2,22 +2,28 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   Patch,
   Param,
   Delete,
+  Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 
 @Controller('users')
+@ApiTags('User')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   *
+   * Create a new user in the system with the given data. The user is created with the default role of Customer.
+   *
+   */
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() userData: Prisma.UserCreateInput) {
+    return this.usersService.create(userData);
   }
 
   @Get()
@@ -31,8 +37,8 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string) {
+    return this.usersService.update(+id);
   }
 
   @Delete(':id')
