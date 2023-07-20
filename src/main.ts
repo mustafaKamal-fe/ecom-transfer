@@ -11,6 +11,12 @@ async function bootstrap() {
     .setDescription('Ecommerce API description')
     .setVersion('1.0')
     .addBearerAuth()
+    .addTag(
+      'User',
+      `System User management where all system parties are managed.
+       The system parties are: Admin, Customer, Seller, Delivery Person, etc. The system parties are managed by the admin user. The admin user is created by the system when the system is installed. The admin user can create other users and assign roles to them.
+    `,
+    )
 
     .build();
   const document = SwaggerModule.createDocument(app, config);
