@@ -1,7 +1,7 @@
 enum Role {
   superAdmin = 'superAdmin',
   admin = 'admin',
-  coustomer = 'coustomer',
+  customer = 'customer',
   shopAdmin = 'shopAdmin',
   shopManager = 'shopManager',
   shopStaff = 'shopStaff',
