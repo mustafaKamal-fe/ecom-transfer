@@ -12,7 +12,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {});
 
   // Add global validation pipe
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: true,
+      forbidNonWhitelisted: true,
+      whitelist: true,
+      stopAtFirstError: true,
+      enableDebugMessages: true,
+      transform: true,
+    }),
+  );
 
   // Add global exception filter
   app.useGlobalFilters(new AppExceptionFilter());
