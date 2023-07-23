@@ -47,11 +47,7 @@ model User {
   providerId   String?
   rewardPoints Int?    @default(0)
 
-  // available value:
-  // user
-  // seller
-  // admin
-  role               String?             @default("user")
+  role               String?             @default("customer")
   orders             Order[]
   products           Product[]
   carts              cart[]
