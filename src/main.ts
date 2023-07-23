@@ -42,6 +42,7 @@ async function bootstrap() {
       'Wallet',
       `Wallet is used to store money for a user. Currently when a user account is created, an empty wallet is created for the user.`,
     )
+    .addTag('Profile', `Profile is used to store user's personal information.`)
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     extraModels: [ValdiationErrorDto, CustomAppErrorDto],

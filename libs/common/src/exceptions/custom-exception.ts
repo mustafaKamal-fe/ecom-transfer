@@ -11,6 +11,12 @@ export class AppCustomException extends HttpException {
   static appCodes = {
     // 1000 - 1999: User management related errors
     badRequest: { customCode: 1000, httpCode: HttpStatus.BAD_REQUEST },
+    userNotProvided: { customCode: 1001, httpCode: HttpStatus.BAD_REQUEST },
+    userNotFound: { customCode: 1002, httpCode: HttpStatus.NOT_FOUND },
+    userAlreadyHasProfile: {
+      customCode: 1003,
+      httpCode: HttpStatus.BAD_REQUEST,
+    },
     // 2000 - 2999: Product management related errors
     // 3000 - 3999: Order management related errors
     // 4000 - 4999: Cart management related errors

@@ -5,6 +5,9 @@ export const appDefinedErrors = [
   'badRequest',
   'emailAlreadyExists',
   'usernameAlreadyExists',
+  'userNotProvided',
+  'userAlreadyHasProfile',
+  'userNotFound',
 ];
 
 /**
@@ -14,4 +17,7 @@ export type ErrorMessages =
   | 'badRequest'
   | 'unidentifiedThrownException'
   | 'emailAlreadyExists'
-  | 'usernameAlreadyExists';
+  | 'usernameAlreadyExists'
+  | 'userNotProvided'
+  | 'userAlreadyHasProfile'
+  | 'userNotFound';
