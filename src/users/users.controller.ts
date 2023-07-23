@@ -8,8 +8,10 @@ import {
   Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
+import { apiExceptionResponse } from '@common/common/exceptions/exception.decorator';
+import { CreateUserDto } from './dto';
 
 @Controller('users')
 @ApiTags('User')
@@ -22,6 +24,11 @@ export class UsersController {
    *
    */
   @Post()
+  @apiExceptionResponse()
+  @ApiCreatedResponse({
+    description: 'The user has been successfully created.',
+  })
+  @ApiBody({ type: CreateUserDto })
   create(@Body() userData: Prisma.UserCreateInput) {
     return this.usersService.create(userData);
   }
