@@ -2,6 +2,7 @@ import { AppCustomException } from '@common/common/exceptions/custom-exception';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateUserDto } from './dto';
 
 @Injectable()
 export class UsersService {
@@ -41,16 +42,35 @@ export class UsersService {
       },
     });
   }
-  findAll() {
-    return `This action returns all users`;
-  }
+  // findAll() {
+  //   return `This action returns all users`;
+  // }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    // TODO: add DB view to get user profile
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        fname: true,
+        lname: true,
+        email: true,
+        username: true,
+        role: true,
+        profile: true,
+      },
+    });
   }
 
-  update(id: number) {
-    return `${id}`;
+  update(userData: UpdateUserDto) {
+    const { id, firstName, lastName } = userData;
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        fname: firstName,
+        lname: lastName,
+      },
+    });
   }
 
   remove(id: number) {
