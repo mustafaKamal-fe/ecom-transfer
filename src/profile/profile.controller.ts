@@ -14,7 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { apiExceptionResponse } from '@common/common/exceptions/exception.decorator';
 
 @Controller('profile')
-@ApiTags('profile')
+@ApiTags('Profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 

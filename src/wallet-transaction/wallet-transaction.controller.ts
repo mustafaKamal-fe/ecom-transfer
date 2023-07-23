@@ -10,8 +10,10 @@ import {
 import { WalletTransactionService } from './wallet-transaction.service';
 // import { CreateWalletTransactionDto } from './dto/create-wallet-transaction.dto';
 import { UpdateWalletTransactionDto } from './dto/update-wallet-transaction.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('wallet-transaction')
+@ApiTags('Wallet Transaction')
 export class WalletTransactionController {
   constructor(
     private readonly walletTransactionService: WalletTransactionService,
