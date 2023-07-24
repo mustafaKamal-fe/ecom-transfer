@@ -8,6 +8,11 @@ import { WalletModule } from './wallet/wallet.module';
 import { WalletTransactionModule } from './wallet-transaction/wallet-transaction.module';
 import { ProfileModule } from './profile/profile.module';
 import { MilisearchModule } from './milisearch/milisearch.module';
+
+import { ProductsModule } from './products/products.module';
+import { ShopsModule } from './shops/shops.module';
+import { MilisearchModule } from './milisearch/milisearch.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -19,6 +24,8 @@ import { MilisearchModule } from './milisearch/milisearch.module';
     WalletTransactionModule,
     ProfileModule,
     MilisearchModule,
+    ShopsModule,
+    ProductsModule,
   ],
 })
 export class AppModule {}

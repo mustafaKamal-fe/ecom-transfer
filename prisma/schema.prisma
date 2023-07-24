@@ -10,13 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// just for testing
-model Data {
-  id    Int     @id @default(autoincrement())
-  title String?
-  text  String? @db.Text
-}
-
 model Profile {
   id          Int       @id @default(autoincrement())
   dateOfBirth DateTime?
@@ -52,7 +45,6 @@ model User {
   products           Product[]
   carts              cart[]
   shops              Shop[]
-  subOrders          SubOrder[]
   categorys          Category[]
   shopId             Int?
   deliveryBoy        DeliveryBoy?        @relation(fields: [deliveryBoyId], references: [id])
@@ -160,23 +152,12 @@ model Category {
 }
 
 model Tag {
-  id         Int          @id @default(autoincrement())
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now())
-  title      String
-  ProductTag ProductTag[]
-}
-
-model ProductTag {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId Int?
-
-  tag   Tag? @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  tagId Int?
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  title     String    @unique
+  slug      String    @unique
+  products  Product[]
 }
 
 model Product {
@@ -184,8 +165,8 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  optionSet   OptionSet? @relation(fields: [optionSetId], references: [id])
-  optionSetId Int?
+  // optionSet   OptionSet? @relation(fields: [optionSetId], references: [id])
+  // optionSetId Int?
 
   name String  @db.VarChar(255)
   slug String? @db.VarChar(255)
@@ -223,7 +204,7 @@ model Product {
   productImages   ProductImage[]
   carts           cart[]
   subOrderItems   SubOrderItem[]
-  productTags     ProductTag[]
+  tags            Tag[]
   productVariants ProductVariant[]
   inventoryLogs   InventoryLog[]
   wholesalePrices wholesalePrice[]
@@ -306,82 +287,81 @@ model ProductVariantImage {
 }
 
 // Custom option set
-model OptionSet {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+// model OptionSet {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @default(now())
 
-  shopId Int?
-  shop   Shop? @relation(fields: [shopId], references: [id], onDelete: Cascade)
+//   shopId Int?
+//   shop   Shop? @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
-  name             String?            @db.VarChar(255)
-  description      String?            @db.Text
-  status           Int?               @default(0)
-  sortOrder        Int?               @default(0)
-  OptionSetElement OptionSetElement[]
-  Product          Product[]
-}
+//   name             String?            @db.VarChar(255)
+//   description      String?            @db.Text
+//   status           Int?               @default(0)
+//   sortOrder        Int?               @default(0)
+//   OptionSetElement OptionSetElement[]
+//   Product          Product[]
+// }
 
 // Custom option set item
-model OptionSetElement {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+// model OptionSetElement {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @default(now())
 
-  optionSetId Int?
-  optionSet   OptionSet? @relation(fields: [optionSetId], references: [id], onDelete: Cascade)
+//   optionSetId Int?
+//   optionSet   OptionSet? @relation(fields: [optionSetId], references: [id], onDelete: Cascade)
 
-  // available values:
-  // text, select, textarea
-  type        String? @db.VarChar(255)
-  // ----general----
-  label       String? @db.VarChar(255)
-  name        String? @db.VarChar(255)
-  required    Int?    @default(0)
-  style       String? @db.Text // custom inline css
-  placeholder String? @db.Text
-  helpText    String? @db.Text
-  limit       Int?
-  // ----condition----
-  // if condition fullfilled then this element will be show up
-  // condition format: {action: show/hide, match: all/any,
-  // condition:[{element_name:name, condition:condition, value:value}]}
-  isCondition Int?    @default(0)
-  condition   String? @db.Text
-  // ----select type----
-  optionValue String? @db.Text // option format: [{price:price,value:value,text:text}]
+//   // available values:
+//   // text, select, textarea
+//   type        String? @db.VarChar(255)
+//   // ----general----
+//   label       String? @db.VarChar(255)
+//   name        String? @db.VarChar(255)
+//   required    Int?    @default(0)
+//   style       String? @db.Text // custom inline css
+//   placeholder String? @db.Text
+//   helpText    String? @db.Text
+//   limit       Int?
+//   // ----condition----
+//   // if condition fullfilled then this element will be show up
+//   // condition format: {action: show/hide, match: all/any,
+//   // condition:[{element_name:name, condition:condition, value:value}]}
+//   isCondition Int?    @default(0)
+//   condition   String? @db.Text
+//   // ----select type----
+//   optionValue String? @db.Text // option format: [{price:price,value:value,text:text}]
 
-  status    Int? @default(0)
-  sortOrder Int? @default(0)
-}
+//   status    Int? @default(0)
+//   sortOrder Int? @default(0)
+// }
 
 // User can create own shop to selling products
 model Shop {
-  id              Int           @id @default(autoincrement())
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now())
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @default(now())
   mangers         User[]
-  shopType        String?       @default("retaile") // available value: retaile, wholesale, restaurant, small_business
-  openTime        String?       @default("00:00")
-  closeTime       String?       @default("23:59")
-  daysOff         String[]      @default([]) // available value: sunday, monday, tuesday, wednesday, thursday, friday, saturday
-  isBusy          Boolean?      @default(false)
-  pendingOrderLmt Int?          @default(100)
-  canPreOrder     Boolean?      @default(false)
+  shopType        String?     @default("retaile") // available value: retaile, wholesale, restaurant, small_business
+  openTime        String?     @default("00:00")
+  closeTime       String?     @default("23:59")
+  daysOff         String[]    @default([]) // available value: sunday, monday, tuesday, wednesday, thursday, friday, saturday
+  isBusy          Boolean?    @default(false)
+  pendingOrderLmt Int?        @default(100)
+  canPreOrder     Boolean?    @default(false)
   // available value:
   // 1: pending
   // 2: approved
   // 3: banned
   // 4: disabled
-  status          String?       @default("pending")
+  status          String?     @default("pending")
   // available value:
   // 1: active
   // 2: deactive
-  sellerStatus    String?       @default("active")
-  ShopDetails     ShopDetails[]
-  Product         Product[]
-  SubOrder        SubOrder[]
-  OptionSet       OptionSet[]
+  sellerStatus    String?     @default("active")
+  shopDetails     ShopDetails @relation(fields: [shopDetailsId], references: [id])
+  shopDetailsId   Int         @unique
+  products        Product[]
 }
 
 // contains shop details
@@ -394,26 +374,15 @@ model ShopDetails {
   name        String?
   phone       String?
   email       String?
-  description String?  @db.Text
+  description String? @db.Text
   logo        String?
-  shopId      Int?
+  shopId      Int?    @unique
   latitute    Float?
   longitute   Float?
-  Shop        Shop?    @relation(fields: [shopId], references: [id], onDelete: Cascade)
-  shopUrlId   Int?
-  shopUrl     ShopUrl? @relation(fields: [shopUrlId], references: [id], onDelete: Cascade)
-  addressId   Int?
-  address     Address? @relation(fields: [addressId], references: [id], onDelete: Cascade)
-}
 
-model ShopUrl {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  name        String?
-  url         String?
-  ShopDetails ShopDetails[]
+  addressId Int
+  address   Address? @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  Shop      Shop?
 }
 
 // user order details
@@ -462,7 +431,6 @@ model Order {
   OrderItem        OrderItem[]
   PaymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
   paymentDetailsId Int?
-  SubOrder         SubOrder[]
 }
 
 // Order item
@@ -480,32 +448,15 @@ model OrderItem {
   shopOrderId Int?
 }
 
-// this sub order table for seller order
-model SubOrder {
-  id           Int            @id @default(autoincrement())
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @default(now())
-  order        Order?         @relation(fields: [orderId], references: [orderId], onDelete: SetNull)
-  orderId      String?
-  seller       User?          @relation(fields: [sellerId], references: [id], onDelete: SetNull)
-  sellerId     Int?
-  shopId       Int?
-  shop         Shop?          @relation(fields: [shopId], references: [id], onDelete: SetNull)
-  status       String?
-  total        String?
-  SubOrderItem SubOrderItem[]
-}
-
 // suborder item for seller order
 model SubOrderItem {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now())
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
   quantity   Int
   price      Decimal
   subOrderId Int?
-  subOrder   SubOrder? @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
-  product    Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product    Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId  Int
 }
 
