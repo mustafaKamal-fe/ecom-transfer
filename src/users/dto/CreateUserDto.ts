@@ -1,5 +1,5 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsEmail, IsNumber, IsString, IsStrongPassword } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -54,46 +54,4 @@ export class CreateUserDto {
     nullable: true,
   })
   lastName?: string;
-}
-
-export class UpdateUserDto extends PickType(CreateUserDto, [
-  'firstName',
-  'lastName',
-] as const) {
-  @ApiProperty({
-    description: 'The user ID',
-    example: 1,
-    type: 'number',
-    nullable: false,
-  })
-  @IsNumber()
-  id: number;
-}
-
-export class UserObject {
-  @ApiProperty()
-  id: number;
-  @ApiProperty()
-  username: string;
-  @ApiProperty()
-  email: string;
-  @ApiProperty()
-  firstName: string;
-  @ApiProperty()
-  lastName: string;
-  @ApiProperty()
-  role: string;
-  @ApiProperty({
-    type: 'object',
-    properties: {
-      id: { type: 'number' },
-      dateOfBirth: { type: 'string' },
-      mobile: { type: 'string' },
-    },
-  })
-  profile: {
-    id: number;
-    dateOfBirth: string;
-    mobile: string;
-  };
 }

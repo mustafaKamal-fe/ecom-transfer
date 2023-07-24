@@ -7,7 +7,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
-enum Gender {
+export enum Gender {
   male = 'male',
   female = 'female',
 }
@@ -36,7 +36,7 @@ export class CreateProfileDto {
   @ApiProperty({
     type: String,
     description: 'Gender type',
-    oneOf: [{ enum: ['male', 'female'] }],
+    enum: Gender,
     required: false,
   })
   @IsEnum(Gender)

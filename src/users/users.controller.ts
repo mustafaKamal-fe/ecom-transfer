@@ -8,15 +8,11 @@ import {
   Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import {
-  ApiBody,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { apiExceptionResponse } from '@common/common/exceptions/exception.decorator';
-import { CreateUserDto, UpdateUserDto, UserObject } from './dto';
+import { UserObject } from './entity/UserObject.entity';
+import { UpdateUserDto } from './dto/UpdateUserDto';
+import { CreateUserDto } from './dto/CreateUserDto';
 
 @Controller('users')
 @ApiTags('User')
@@ -31,10 +27,9 @@ export class UsersController {
   @Post()
   @apiExceptionResponse()
   @ApiCreatedResponse({
-    description: 'The user has been successfully created.',
+    description: 'User was created successfully.',
   })
-  @ApiBody({ type: CreateUserDto })
-  create(@Body() userData: Prisma.UserCreateInput) {
+  create(@Body() userData: CreateUserDto) {
     return this.usersService.create(userData);
   }
 
@@ -58,7 +53,9 @@ export class UsersController {
    */
   @Patch()
   @apiExceptionResponse()
-  @ApiBody({ type: UpdateUserDto })
+  @ApiOkResponse({
+    description: 'User was updated successfully.',
+  })
   update(@Body() userData: UpdateUserDto) {
     return this.usersService.update(userData);
   }

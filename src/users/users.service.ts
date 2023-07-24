@@ -1,39 +1,18 @@
-import { AppCustomException } from '@common/common/exceptions/custom-exception';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateUserDto } from './dto';
+import { UpdateUserDto } from './dto/UpdateUserDto';
+import { CreateUserDto } from './dto/CreateUserDto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.UserCreateInput) {
-    // Check if email is already registered
-    if (data.email) {
-      const isEmailExists = await this.prisma.user.findUnique({
-        where: { email: data.email },
-      });
-      if (isEmailExists) {
-        throw new AppCustomException('emailAlreadyExists');
-      }
-    }
-
-    // Check if username is already registered
-    if (data.username) {
-      const isUsernameExists = await this.prisma.user.findUnique({
-        where: { username: data.username },
-      });
-      if (isUsernameExists) {
-        throw new AppCustomException('usernameAlreadyExists');
-      }
-    }
-
+  async create(data: CreateUserDto) {
     // Create user
     return this.prisma.user.create({
       data: {
         ...data,
-        role: data.role || 'customer',
+        // Initial empty wallet
         wallet: {
           create: {
             amount: 0,
@@ -42,6 +21,7 @@ export class UsersService {
       },
     });
   }
+
   // findAll() {
   //   return `This action returns all users`;
   // }

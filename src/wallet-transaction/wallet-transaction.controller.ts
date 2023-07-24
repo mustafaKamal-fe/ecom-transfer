@@ -10,7 +10,8 @@ import {
 import { WalletTransactionService } from './wallet-transaction.service';
 // import { CreateWalletTransactionDto } from './dto/create-wallet-transaction.dto';
 import { UpdateWalletTransactionDto } from './dto/update-wallet-transaction.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { WalletTransactionEntity } from './entity/wallet-transaction.entity';
 
 @Controller('wallet-transaction')
 @ApiTags('Wallet Transaction')
@@ -33,6 +34,10 @@ export class WalletTransactionController {
    * Get wallet transaction by id
    */
   @Get(':id')
+  @ApiOkResponse({
+    description: 'Returns the wallet transaction with the given id.',
+    type: WalletTransactionEntity,
+  })
   findOne(@Param('id') id: string) {
     return this.walletTransactionService.findOne(+id);
   }
@@ -41,14 +46,8 @@ export class WalletTransactionController {
    *  Update wallet transaction by id. Only status can be updated.
    */
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateWalletTransactionDto: UpdateWalletTransactionDto,
-  ) {
-    return this.walletTransactionService.update(
-      +id,
-      updateWalletTransactionDto,
-    );
+  update(@Body() updateWalletTransactionDto: UpdateWalletTransactionDto) {
+    return this.walletTransactionService.update(updateWalletTransactionDto);
   }
 
   /**

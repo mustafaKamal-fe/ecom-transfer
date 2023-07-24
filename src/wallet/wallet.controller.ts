@@ -10,7 +10,8 @@ import {
 import { WalletService } from './wallet.service';
 // import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { WalletEntity } from './entity/wallet.entity';
 
 @Controller('wallet')
 @ApiTags('Wallet')
@@ -31,17 +32,21 @@ export class WalletController {
    * Get wallet by id
    */
   @Get(':id')
+  @ApiOkResponse({
+    description: 'Returns the wallet with the given id.',
+    type: WalletEntity,
+  })
   findOne(@Param('id') id: string) {
     return this.walletService.findOne(+id);
   }
 
   /**
-   * Update wallet by id. Only amount can be updated.
+   * Update wallet by id. Only `amount` can be updated.
    *
    */
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWalletDto: UpdateWalletDto) {
-    return this.walletService.update(+id, updateWalletDto);
+  @Patch()
+  update(@Body() updateWalletDto: UpdateWalletDto) {
+    return this.walletService.update(updateWalletDto);
   }
 
   /**

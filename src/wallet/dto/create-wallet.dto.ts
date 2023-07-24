@@ -1,3 +1,6 @@
+import { IsInt } from 'class-validator';
+
 export class CreateWalletDto {
-  amount: string;
+  @IsInt()
+  amount: number;
 }

@@ -20,10 +20,11 @@ export class WalletTransactionService {
     });
   }
 
-  update(id: number, updateWalletTransactionDto: UpdateWalletTransactionDto) {
+  update(updateWalletTransactionDto: UpdateWalletTransactionDto) {
+    const { id, amount } = updateWalletTransactionDto;
     return this.prisma.walletTransaction.update({
       where: { id },
-      data: updateWalletTransactionDto,
+      data: { amount },
     });
   }
 
