@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ShopsService {
+  constructor(private readonly prisma: PrismaService) {}
+
   create(createShopDto: CreateShopDto) {
-    return 'This action adds a new shop';
+    return `This action adds a new shop ${createShopDto}`;
   }
 
   findAll() {
@@ -17,7 +20,7 @@ export class ShopsService {
   }
 
   update(id: number, updateShopDto: UpdateShopDto) {
-    return `This action updates a #${id} shop`;
+    return `This action updates a #${id} shop with ${updateShopDto}`;
   }
 
   remove(id: number) {

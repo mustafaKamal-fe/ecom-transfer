@@ -363,9 +363,9 @@ model Shop {
   // 1: active
   // 2: deactive
   sellerStatus    String?     @default("active")
-  ShopDetails     ShopDetails @relation(fields: [shopDetailsId], references: [id])
+  shopDetails     ShopDetails @relation(fields: [shopDetailsId], references: [id])
   shopDetailsId   Int         @unique
-  Product         Product[]
+  products        Product[]
 }
 
 // contains shop details
@@ -380,7 +380,7 @@ model ShopDetails {
   email       String?
   description String? @db.Text
   logo        String?
-  shopId      Int     @unique
+  shopId      Int?    @unique
   latitute    Float?
   longitute   Float?
 
