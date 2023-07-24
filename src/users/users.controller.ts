@@ -2,43 +2,68 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   Patch,
   Param,
   Delete,
+  Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { apiExceptionResponse } from '@common/common/exceptions/exception.decorator';
+import { UserObject } from './entity/UserObject.entity';
+import { UpdateUserDto } from './dto/UpdateUserDto';
+import { CreateUserDto } from './dto/CreateUserDto';
 
 @Controller('users')
+@ApiTags('User')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   /**
-   * Create User API
+   *
+   * Create a new user in the system with the given data. The user is created with the default role of Customer.
    *
    */
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @apiExceptionResponse()
+  @ApiCreatedResponse({
+    description: 'User was created successfully.',
+  })
+  create(@Body() userData: CreateUserDto) {
+    return this.usersService.create(userData);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
 
   @Get(':id')
+  @ApiOkResponse({
+    description: 'Returns the user with the given id.',
+    type: UserObject,
+  })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  /**
+   * Update user record. Currently only `First Name` & `Last Name` can be updated.
+   *
+   */
+  @Patch()
+  @apiExceptionResponse()
+  @ApiOkResponse({
+    description: 'User was updated successfully.',
+  })
+  update(@Body() userData: UpdateUserDto) {
+    return this.usersService.update(userData);
   }
 
+  /**
+   * Remove user record from the system.
+   *
+   */
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

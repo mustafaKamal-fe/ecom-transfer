@@ -33,3 +33,9 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# MIlliesearch
+/data.ms/auth
+/data.ms/tasks
+/data.ms/indexes
+/data.ms/update_files
