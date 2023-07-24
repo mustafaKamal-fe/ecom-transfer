@@ -8,8 +8,6 @@ import { WalletModule } from './wallet/wallet.module';
 import { WalletTransactionModule } from './wallet-transaction/wallet-transaction.module';
 import { ProfileModule } from './profile/profile.module';
 import { MilisearchModule } from './milisearch/milisearch.module';
-import { MilisearchModule } from './milisearch/milisearch.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
