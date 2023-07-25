@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateProvinceDto } from './dto/create-province.dto';
 import { UpdateProvinceDto } from './dto/update-province.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -9,13 +10,32 @@ export class ProvinceService {
   constructor(private prisma: PrismaService) {}
 
   async create(createProvinceDto: CreateProvinceDto) {
-    const { name, deleviryFee, deleviryTime } = createProvinceDto;
+    let province: Prisma.ProvinceCreateInput; // Province payload
+
+    // Create province with city
+    if (createProvinceDto.cityId) {
+      province = {
+        deleviryFee: createProvinceDto.deleviryFee,
+        deleviryTime: createProvinceDto.deleviryTime,
+        name: createProvinceDto.name,
+        city: {
+          connect: {
+            id: createProvinceDto.cityId,
+          },
+        },
+      };
+    } else {
+      // Create province without city
+      province = {
+        deleviryFee: createProvinceDto.deleviryFee,
+        deleviryTime: createProvinceDto.deleviryTime,
+        name: createProvinceDto.name,
+      };
+    }
+
+    // Create province
     await this.prisma.province.create({
-      data: {
-        name,
-        deleviryFee,
-        deleviryTime,
-      },
+      data: province,
     });
   }
 
@@ -43,11 +63,10 @@ export class ProvinceService {
   }
 
   async update(id: number, updateProvinceDto: UpdateProvinceDto) {
-    const { name, deleviryFee, deleviryTime } = updateProvinceDto;
     // Check if the name is duplicated
     const duplicated = await this.prisma.province.findUnique({
       where: {
-        name,
+        name: updateProvinceDto.name,
       },
     });
 
@@ -55,16 +74,35 @@ export class ProvinceService {
       throw new AppCustomException('provinceNameDuplicated');
     }
 
-    // Create the province
-    return this.prisma.province.update({
+    // Update the province
+    let province: Prisma.ProvinceUpdateInput;
+
+    // Update province with city
+    if (updateProvinceDto.cityId) {
+      province = {
+        name: updateProvinceDto.name,
+        deleviryFee: updateProvinceDto.deleviryFee,
+        deleviryTime: updateProvinceDto.deleviryTime,
+        city: {
+          connect: {
+            id: updateProvinceDto.cityId,
+          },
+        },
+      };
+    } else {
+      // Update province without city
+      province = {
+        name: updateProvinceDto.name,
+        deleviryFee: updateProvinceDto.deleviryFee,
+        deleviryTime: updateProvinceDto.deleviryTime,
+      };
+    }
+
+    return await this.prisma.province.update({
       where: {
         id,
       },
-      data: {
-        name,
-        deleviryFee,
-        deleviryTime,
-      },
+      data: province,
     });
   }
 

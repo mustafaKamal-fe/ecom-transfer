@@ -1,6 +1,6 @@
 import { ProvinceEnum } from '@common/common/enums/province.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDecimal, IsEnum, IsInt } from 'class-validator';
+import { IsDecimal, IsEnum, IsInt, IsOptional } from 'class-validator';
 
 export class CreateProvinceDto {
   @ApiProperty({
@@ -30,4 +30,14 @@ export class CreateProvinceDto {
   })
   @IsInt()
   deleviryTime: number;
+
+  @ApiProperty({
+    description: 'City ID',
+    example: 1,
+    required: false,
+    format: 'int',
+  })
+  @IsOptional()
+  @IsInt()
+  cityId?: number;
 }
