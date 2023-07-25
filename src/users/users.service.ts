@@ -1,29 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import * as argon2 from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/UpdateUserDto';
 import { CreateUserDto } from './dto/CreateUserDto';
-import Role from '@common/common/enums/role.enum';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateUserDto) {
-    const { email, username, firstName, lastName, password } = data;
     // Create user
     return this.prisma.user.create({
       data: {
+        // Empty wallet and profile
         wallet: {
           create: {
             amount: 0,
           },
         },
-        role: Role.customer, // TODO: change to different role when authentication is implemented
-        email,
-        username,
-        fname: firstName,
-        lname: lastName,
-        password, // TODO: change the way passowrds are stored after authentication is implemented
+        profile: {
+          create: {},
+        },
+        role: data.role, // TODO: change to different role when authentication is implemented
+        email: data.email,
+        username: data.username,
+        fname: data.firstName,
+        lname: data.lastName,
+        password: await argon2.hash(data.password as string), // TODO: change the way passowrds are stored after authentication is implemented
       },
     });
   }

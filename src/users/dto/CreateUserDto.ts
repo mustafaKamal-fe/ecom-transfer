@@ -1,5 +1,12 @@
+import Role from '@common/common/enums/role.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -7,11 +14,12 @@ export class CreateUserDto {
     description: 'The username of the user',
     example: 'user',
     type: 'string',
-    nullable: true,
+    nullable: false,
   })
-  username?: string;
+  username: string;
 
   @IsEmail()
+  @IsOptional()
   @ApiProperty({
     description: 'The email of the user',
     example: 'user@example.com',
@@ -33,25 +41,37 @@ export class CreateUserDto {
     example: 'password',
     type: 'string',
     format: 'password',
-    nullable: true,
+    nullable: false,
   })
-  password?: string;
+  password: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({
     description: 'The first name of the user',
     example: 'John',
     type: 'string',
-    nullable: true,
+    nullable: false,
   })
-  firstName?: string;
+  firstName: string;
 
   @IsString()
   @ApiProperty({
     description: 'The last name of the user',
     example: 'Doe',
     type: 'string',
-    nullable: true,
+    nullable: false,
   })
-  lastName?: string;
+  lastName: string;
+
+  @ApiProperty({
+    description: 'The role of the user',
+    example: 'admin',
+    enum: Role,
+    enumName: 'Role',
+    type: 'string',
+    nullable: false,
+  })
+  @IsEnum(Role)
+  role: Role = Role.admin;
 }
