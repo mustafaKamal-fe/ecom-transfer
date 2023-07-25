@@ -27,8 +27,13 @@ module.exports = {
     "@typescript-eslint/no-floating-promises": "error",
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": "error",
-    "@typescript-eslint/naming-convention": "error",
-    "require-await": "off",
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        selector: "variable",
+        format: ["camelCase"]
+      },
+    ],    "require-await": "off",
     "@typescript-eslint/require-await": "error",
     "no-nested-ternary": "error",
 

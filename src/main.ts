@@ -12,7 +12,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {});
 
   // Add global validation pipe
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: true,
+      forbidNonWhitelisted: true,
+      whitelist: true,
+      stopAtFirstError: true,
+      enableDebugMessages: true,
+      transform: true,
+    }),
+  );
 
   // Add global exception filter
   app.useGlobalFilters(new AppExceptionFilter());
@@ -23,6 +32,22 @@ async function bootstrap() {
     .setDescription('Ecommerce API description')
     .setVersion('1.0')
     .addBearerAuth()
+    .addTag(
+      'User',
+      `System User management where all system parties are managed.
+       The system parties are: Admin, Customer, Seller, Delivery Person, etc. The system parties are managed by the admin user. The admin user is created by the system when the system is installed. The admin user can create other users and assign roles to them.
+    `,
+    )
+    .addTag('Profile', `Profile is used to store user's personal information.`)
+    .addTag(
+      'Wallet',
+      `Wallet is used to store money for a user. Currently when a user account is created, an empty wallet is created for the user.`,
+    )
+    .addTag(
+      'Wallet Transaction',
+      `Wallet transaction is used to store wallet transactions.`,
+    )
+
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     extraModels: [ValdiationErrorDto, CustomAppErrorDto],

@@ -5,7 +5,9 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Response } from 'express';
+import { PrismaExptionHandler } from './prisma-exception-handler';
 
 /**
  * Catch all app exceptions
@@ -35,6 +37,21 @@ export class AppExceptionFilter implements ExceptionFilter {
         customErrorMessage: 'validation_error',
         customErrorCode: 999,
         validation: exception,
+      });
+    }
+
+    /**
+     * Handle Prisma error response
+     */
+    if (exception instanceof PrismaClientKnownRequestError) {
+      const eror = new PrismaExptionHandler(exception);
+      status = HttpStatus.BAD_REQUEST;
+
+      return response.status(status).json({
+        time: new Date().toISOString(),
+        path: request.url,
+        errorCode: exception.code,
+        prismaError: eror.errorMessage,
       });
     }
 
