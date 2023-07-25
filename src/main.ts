@@ -39,6 +39,10 @@ async function bootstrap() {
     `,
     )
     .addTag(
+      'Address',
+      `Address is used to store and manage addresses. Each user can have multiple addresses. Address is also used in conjunction with city and province to calculate delivery fee and delivery time.`,
+    )
+    .addTag(
       'City',
       `City is used to store and manage provinces. Cities are used to manage addresses.`,
     )
