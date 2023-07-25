@@ -10,6 +10,7 @@ import { ProfileModule } from './profile/profile.module';
 import { MilisearchModule } from './milisearch/milisearch.module';
 import { ProductsModule } from './products/products.module';
 import { ShopsModule } from './shops/shops.module';
+import { ProvinceModule } from './province/province.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ShopsModule } from './shops/shops.module';
     MilisearchModule,
     ShopsModule,
     ProductsModule,
+    ProvinceModule,
   ],
 })
 export class AppModule {}
