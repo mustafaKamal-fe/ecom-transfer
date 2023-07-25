@@ -39,8 +39,12 @@ async function bootstrap() {
     `,
     )
     .addTag(
+      'City',
+      `City is used to store and manage provinces. Cities are used to manage addresses.`,
+    )
+    .addTag(
       'Province',
-      `Province is used to store and manage provinces. Proovinces are used to manage addresses.`,
+      `Province is used to store and manage provinces. Provinces are used to manage addresses.`,
     )
     .addTag('Profile', `Profile is used to store user's personal information.`)
     .addTag(
