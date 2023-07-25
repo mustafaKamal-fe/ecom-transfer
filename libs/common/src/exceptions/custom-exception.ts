@@ -24,9 +24,14 @@ export class AppCustomException extends HttpException {
     // 6000 - 6999: Shipping management related errors
     // 7000 - 7999: Notification management related errors
     // 8000 - 8999: System management related errors
-    // 9000 - 9999: Common errors
-    unidentifiedThrownException: {
+    // 9000 - 9999: Address management related error
+    provinceNameDuplicated: {
       customCode: 9000,
+      httpCode: HttpStatus.BAD_REQUEST,
+    },
+    // 10000 - 10999: Unidentified thrown exceptions
+    unidentifiedThrownException: {
+      customCode: 10000,
       httpCode: HttpStatus.INTERNAL_SERVER_ERROR,
     },
   };
