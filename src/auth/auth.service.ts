@@ -4,7 +4,7 @@ import { UserLoginDto } from './dto/user-login.dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { exclude } from 'src/common/utils/exclude';
+import { exclude } from '@common/common/utils/exclude';
 import { UserLogin } from './entities/user-login.entity';
 @Injectable()
 export class AuthService {
