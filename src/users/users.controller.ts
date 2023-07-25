@@ -22,6 +22,7 @@ export class UsersController {
   /**
    *
    * Create a new user in the system with the given data. The user is created with the default role of Customer.
+   * The user is also assigned a wallet with 0 `balance`.
    *
    */
   @Post()
