@@ -38,6 +38,10 @@ async function bootstrap() {
        The system parties are: Admin, Customer, Seller, Delivery Person, etc. The system parties are managed by the admin user. The admin user is created by the system when the system is installed. The admin user can create other users and assign roles to them.
     `,
     )
+    .addTag(
+      'Province',
+      `Province is used to store and manage provinces. Proovinces are used to manage addresses.`,
+    )
     .addTag('Profile', `Profile is used to store user's personal information.`)
     .addTag(
       'Wallet',
