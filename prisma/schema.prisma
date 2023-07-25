@@ -79,7 +79,7 @@ model Wallet {
 
   amount            Decimal             @default(0)
   user              User?
-  WalletTransaction WalletTransaction[]
+  walletTransaction WalletTransaction[]
 }
 
 model WalletTransaction {
@@ -102,12 +102,12 @@ model Ucode {
 
 model City {
   id           Int       @id @default(autoincrement())
-  name         String    @unique
+  name         String
   deleviryFee  Decimal?
   deleviryTime Int?
   provinceId   Int?
   province     Province? @relation(fields: [provinceId], references: [id])
-  Address      Address[]
+  address      Address[]
 }
 
 model Province {
@@ -115,8 +115,8 @@ model Province {
   name         String    @unique
   deleviryFee  Decimal
   deleviryTime Int
-  Address      Address[]
-  City         City[]
+  address      Address[]
+  city         City[]
 }
 
 model Address {
@@ -126,14 +126,15 @@ model Address {
   city        City?         @relation(fields: [cityId], references: [id])
   provinceId  Int
   province    Province      @relation(fields: [provinceId], references: [id])
-  Order       Order[]
+  order       Order[]
   latitude    Float?
   longitude   Float?
   buildingNo  String?
   floorNo     String?
   apartmentNo String?
-  ShopDetails ShopDetails[]
-  Profile     Profile[]
+  shopDetails ShopDetails[]
+  profile     Profile       @relation(fields: [profileId], references: [id])
+  profileId   Int           @unique
 }
 
 model Category {
@@ -249,7 +250,7 @@ model ProductVariant {
   barcode             String?
   status              Int?                  @default(0)
   sortOrder           Int?                  @default(0)
-  ProductVariantImage ProductVariantImage[]
+  productVariantImage ProductVariantImage[]
   inventoryLogs       InventoryLog[]
 }
 
@@ -382,7 +383,7 @@ model ShopDetails {
 
   addressId Int
   address   Address? @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  Shop      Shop?
+  shop      Shop?
 }
 
 // user order details
@@ -429,7 +430,7 @@ model Order {
   user             User?           @relation(fields: [userId], references: [id])
   userId           Int?
   OrderItem        OrderItem[]
-  PaymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
+  paymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
   paymentDetailsId Int?
 }
 
@@ -469,7 +470,7 @@ model PaymentDetails {
   amount    Int
   provider  String?
   status    String?
-  Order     Order[]
+  order     Order[]
 }
 
 model cart {
@@ -539,7 +540,7 @@ model MobileAppConfig {
 
   appVersion String
 
-  SystemConfig SystemConfig[]
+  systemConfig SystemConfig[]
 }
 
 model AuditLog {
