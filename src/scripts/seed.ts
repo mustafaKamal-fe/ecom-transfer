@@ -26,7 +26,7 @@ async function seed() {
       username: 'super',
       fname: 'Administrator',
       password: await argon.hash('super123'),
-      role: Role.customer,
+      role: Role.superAdmin,
       wallet: {
         create: {
           amount: 0,
