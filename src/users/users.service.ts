@@ -2,22 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/UpdateUserDto';
 import { CreateUserDto } from './dto/CreateUserDto';
+import Role from 'src/common/enums/role.enum';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateUserDto) {
+    const { email, username, firstName, lastName, password } = data;
     // Create user
     return this.prisma.user.create({
       data: {
-        ...data,
-        // Initial empty wallet
         wallet: {
           create: {
             amount: 0,
           },
         },
+        role: Role.customer, // TODO: change to different role when authentication is implemented
+        email,
+        username,
+        fname: firstName,
+        lname: lastName,
+        password, // TODO: change the way passowrds are stored after authentication is implemented
       },
     });
   }
