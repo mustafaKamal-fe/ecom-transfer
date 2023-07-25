@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import * as argon from 'argon2';
-import Role from 'src/common/enums/role.enum';
+import Role from '@common/common/enums/role.enum';
 
 //import { customSeed } from './customSeed';
 // import Role from 'src/common/enums/role.enum';
@@ -26,7 +26,7 @@ async function seed() {
       username: 'super',
       fname: 'Administrator',
       password: await argon.hash('super123'),
-      role: Role.customer,
+      role: Role.superAdmin,
       wallet: {
         create: {
           amount: 0,

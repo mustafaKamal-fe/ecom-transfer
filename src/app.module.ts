@@ -8,10 +8,11 @@ import { WalletModule } from './wallet/wallet.module';
 import { WalletTransactionModule } from './wallet-transaction/wallet-transaction.module';
 import { ProfileModule } from './profile/profile.module';
 import { MilisearchModule } from './milisearch/milisearch.module';
-
 import { ProductsModule } from './products/products.module';
 import { ShopsModule } from './shops/shops.module';
-import { MilisearchModule } from './milisearch/milisearch.module';
+import { ProvinceModule } from './province/province.module';
+import { CityModule } from './city/city.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -26,6 +27,9 @@ import { MilisearchModule } from './milisearch/milisearch.module';
     MilisearchModule,
     ShopsModule,
     ProductsModule,
+    ProvinceModule,
+    CityModule,
+    AddressModule,
   ],
 })
 export class AppModule {}

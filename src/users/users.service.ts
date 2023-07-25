@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as argon2 from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/UpdateUserDto';
 import { CreateUserDto } from './dto/CreateUserDto';
@@ -11,13 +12,21 @@ export class UsersService {
     // Create user
     return this.prisma.user.create({
       data: {
-        ...data,
-        // Initial empty wallet
+        // Empty wallet and profile
         wallet: {
           create: {
             amount: 0,
           },
         },
+        profile: {
+          create: {},
+        },
+        role: data.role, // TODO: change to different role when authentication is implemented
+        email: data.email,
+        username: data.username,
+        fname: data.firstName,
+        lname: data.lastName,
+        password: await argon2.hash(data.password as string), // TODO: change the way passowrds are stored after authentication is implemented
       },
     });
   }

@@ -8,6 +8,8 @@ export const appDefinedErrors = [
   'userNotProvided',
   'userAlreadyHasProfile',
   'userNotFound',
+  'provinceNameDuplicated',
+  'cityNameDuplicated',
 ];
 
 /**
@@ -20,4 +22,6 @@ export type ErrorMessages =
   | 'usernameAlreadyExists'
   | 'userNotProvided'
   | 'userAlreadyHasProfile'
-  | 'userNotFound';
+  | 'userNotFound'
+  | 'provinceNameDuplicated'
+  | 'cityNameDuplicated';
